@@ -4,9 +4,11 @@ use std::env;
 
 mod lexer;
 mod parser;
+mod interpreter;
 
 use lexer::{Lexer, Token};
 use parser::{Parser, ASTNode};
+use interpreter::Interpreter;
 
 fn main() {
     // Get the file name from command line arguments
@@ -40,7 +42,13 @@ fn main() {
             let mut parser = Parser::new(tokens);
 
             match parser.parse() {
-                Ok(ast) => println!("AST: {:?}", ast),
+                Ok(ast) => {
+                    let interpreter = Interpreter::new();
+                    match interpreter.execute(ast) {
+                        Ok(_) => println!("Execution completed."),
+                        Err(err) => eprintln!("Execution Error: {}", err),
+                    }
+                }
                 Err(err) => eprintln!("Parsing Error: {}", err),
             }
         }
