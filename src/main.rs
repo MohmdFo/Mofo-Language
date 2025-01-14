@@ -2,6 +2,10 @@ use std::fs::File;
 use std::io::{self, Read};
 use std::env;
 
+mod lexer;
+
+use lexer::{Lexer, Token};
+
 fn main() {
     // Get the file name from command line arguments
     let args: Vec<String> = env::args().collect();
@@ -20,7 +24,17 @@ fn main() {
 
     // Read the file content
     match read_file_to_string(filename) {
-        Ok(content) => println!("File Content:\n{}", content),
+        Ok(content) => {
+            let mut lexer = Lexer::new(content);
+
+            println!("Tokens:");
+            while let Some(token) = lexer.next_token() {
+                println!("{:?}", token);
+                if token == Token::EOF {
+                    break;
+                }
+            }
+        }
         Err(e) => eprintln!("Error reading file: {}", e),
     }
 }
