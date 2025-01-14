@@ -3,6 +3,8 @@ pub enum Token {
     KeywordPrintf,
     Identifier(String),  // Variable names
     StringLiteral(String),
+    Type(String),        // Types like "str"
+    Colon,               // ':'
     ParenOpen,
     ParenClose,
     Assign,              // '='
@@ -29,6 +31,10 @@ impl Lexer {
         let current_char = self.current_char();
 
         match current_char {
+            ':' => {
+                self.position += 1;
+                Some(Token::Colon)
+            }
             '(' => {
                 self.position += 1;
                 Some(Token::ParenOpen)
@@ -42,7 +48,7 @@ impl Lexer {
                 Some(Token::Assign)
             }
             '"' => self.read_string(),
-            'a'..='z' | 'A'..='Z' | '_' => self.read_identifier(),
+            'a'..='z' | 'A'..='Z' | '_' => self.read_identifier_or_type(),
             _ => None,
         }
     }
@@ -78,7 +84,7 @@ impl Lexer {
         Some(Token::StringLiteral(string_literal))
     }
 
-    fn read_identifier(&mut self) -> Option<Token> {
+    fn read_identifier_or_type(&mut self) -> Option<Token> {
         let start = self.position;
 
         while self.position < self.input.len()
@@ -87,11 +93,12 @@ impl Lexer {
             self.position += 1;
         }
 
-        let identifier = &self.input[start..self.position];
+        let word = &self.input[start..self.position];
 
-        match identifier {
+        match word {
             "printf" => Some(Token::KeywordPrintf),
-            _ => Some(Token::Identifier(identifier.to_string())),
+            "str" => Some(Token::Type("str".to_string())), // Add other types here as needed
+            _ => Some(Token::Identifier(word.to_string())),
         }
     }
 }
