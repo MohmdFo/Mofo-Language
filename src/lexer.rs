@@ -42,7 +42,7 @@ impl Lexer {
                 Some(Token::Assign)
             }
             '"' => self.read_string(),
-            'a'..='z' | 'A'..='Z' => self.read_identifier(),
+            'a'..='z' | 'A'..='Z' | '_' => self.read_identifier(),
             _ => None,
         }
     }
@@ -82,7 +82,7 @@ impl Lexer {
         let start = self.position;
 
         while self.position < self.input.len()
-            && self.current_char().is_alphanumeric()
+            && (self.current_char().is_alphanumeric() || self.current_char() == '_')
         {
             self.position += 1;
         }

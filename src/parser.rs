@@ -30,7 +30,7 @@ impl Parser {
         }
     }
 
-    pub fn current_token(&self) -> Option<&Token> { // Made this method public
+    pub fn current_token(&self) -> Option<&Token> {
         self.tokens.get(self.position)
     }
 
@@ -69,13 +69,13 @@ impl Parser {
         if let Some(Token::Identifier(name)) = self.current_token() {
             let variable_name = name.clone();
             self.consume_token(); // Consume the identifier
-    
+
             // Ensure the next token is an assignment operator '='
             if self.current_token() != Some(&Token::Assign) {
                 return Err(format!("Expected '=' after variable name '{}'.", variable_name));
             }
             self.consume_token(); // Consume '='
-    
+
             // Ensure the next token is a string literal
             if let Some(Token::StringLiteral(value)) = self.current_token() {
                 let variable_value = value.clone();

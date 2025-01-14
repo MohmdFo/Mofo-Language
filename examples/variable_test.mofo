@@ -1,2 +1,8 @@
-myvar = "Hello, Variable!"
-printf(myvar)
+my_var = "Hello, Variable!"
+printf(my_var)
+printf("=========")
+_var = "Hello first _ var"
+printf(_var)
+printf("=========")
+__var1 = "Hello first _ var1"
+printf(__var1)
