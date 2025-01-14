@@ -25,3 +25,25 @@ fn test_lexer() {
     assert_eq!(lexer.next_token(), Some(Token::ParenClose));
     assert_eq!(lexer.next_token(), Some(Token::EOF));
 }
+
+
+use mofo_language::lexer::{Lexer, Token};
+use mofo_language::parser::{Parser, ASTNode};
+
+#[test]
+fn test_parser() {
+    let input = String::from("printf(\"Hello, Parser!\")");
+    let mut lexer = Lexer::new(input);
+
+    let tokens: Vec<Token> = lexer
+        .into_iter()
+        .filter(|token| *token != Token::EOF)
+        .collect();
+
+    let mut parser = Parser::new(tokens);
+
+    assert_eq!(
+        parser.parse(),
+        Ok(ASTNode::PrintStatement("Hello, Parser!".to_string()))
+    );
+}

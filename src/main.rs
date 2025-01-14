@@ -3,8 +3,10 @@ use std::io::{self, Read};
 use std::env;
 
 mod lexer;
+mod parser;
 
 use lexer::{Lexer, Token};
+use parser::{Parser, ASTNode};
 
 fn main() {
     // Get the file name from command line arguments
@@ -26,13 +28,20 @@ fn main() {
     match read_file_to_string(filename) {
         Ok(content) => {
             let mut lexer = Lexer::new(content);
+            let mut tokens = Vec::new();
 
-            println!("Tokens:");
             while let Some(token) = lexer.next_token() {
-                println!("{:?}", token);
                 if token == Token::EOF {
                     break;
                 }
+                tokens.push(token);
+            }
+
+            let mut parser = Parser::new(tokens);
+
+            match parser.parse() {
+                Ok(ast) => println!("AST: {:?}", ast),
+                Err(err) => eprintln!("Parsing Error: {}", err),
             }
         }
         Err(e) => eprintln!("Error reading file: {}", e),
