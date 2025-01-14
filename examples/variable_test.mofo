@@ -1,0 +1,2 @@
+myvar = "Hello, Variable!"
+printf(myvar)

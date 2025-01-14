@@ -2,7 +2,14 @@ use crate::lexer::Token;
 
 #[derive(Debug)]
 pub enum ASTNode {
-    PrintStatement(String), // A printf statement with a string argument
+    PrintStatement(Box<Expression>), // A printf statement with an expression
+    Assignment(String, String),      // Variable name and value
+}
+
+#[derive(Debug)]
+pub enum Expression {
+    Variable(String),       // Reference to a variable
+    StringLiteral(String),  // Literal string
 }
 
 pub struct Parser {
@@ -18,8 +25,13 @@ impl Parser {
     pub fn parse(&mut self) -> Result<ASTNode, String> {
         match self.current_token() {
             Some(Token::KeywordPrintf) => self.parse_print_statement(),
+            Some(Token::Identifier(_)) => self.parse_assignment(),
             _ => Err("Unexpected token at the start of the statement.".to_string()),
         }
+    }
+
+    pub fn current_token(&self) -> Option<&Token> { // Made this method public
+        self.tokens.get(self.position)
     }
 
     fn parse_print_statement(&mut self) -> Result<ASTNode, String> {
@@ -30,23 +42,54 @@ impl Parser {
         }
         self.consume_token(); // Consume '('
 
-        if let Some(Token::StringLiteral(value)) = self.current_token() {
-            let string_value = value.clone();
-            self.consume_token(); // Consume the string literal
-
-            if self.current_token() != Some(&Token::ParenClose) {
-                return Err("Expected ')' after string literal.".to_string());
+        let expression = match self.current_token() {
+            Some(Token::StringLiteral(value)) => {
+                let string_value = value.clone();
+                self.consume_token(); // Consume the string literal
+                Expression::StringLiteral(string_value)
             }
-            self.consume_token(); // Consume ')'
+            Some(Token::Identifier(name)) => {
+                let var_name = name.clone();
+                self.consume_token(); // Consume the identifier
+                Expression::Variable(var_name)
+            }
+            _ => return Err("Expected a string literal or variable name.".to_string()),
+        };
 
-            Ok(ASTNode::PrintStatement(string_value))
-        } else {
-            Err("Expected a string literal as the argument to 'printf'.".to_string())
+        if self.current_token() != Some(&Token::ParenClose) {
+            return Err("Expected ')' after printf argument.".to_string());
         }
+        self.consume_token(); // Consume ')'
+
+        Ok(ASTNode::PrintStatement(Box::new(expression)))
     }
 
-    fn current_token(&self) -> Option<&Token> {
-        self.tokens.get(self.position)
+    fn parse_assignment(&mut self) -> Result<ASTNode, String> {
+        // Ensure the current token is an identifier
+        if let Some(Token::Identifier(name)) = self.current_token() {
+            let variable_name = name.clone();
+            self.consume_token(); // Consume the identifier
+    
+            // Ensure the next token is an assignment operator '='
+            if self.current_token() != Some(&Token::Assign) {
+                return Err(format!("Expected '=' after variable name '{}'.", variable_name));
+            }
+            self.consume_token(); // Consume '='
+    
+            // Ensure the next token is a string literal
+            if let Some(Token::StringLiteral(value)) = self.current_token() {
+                let variable_value = value.clone();
+                self.consume_token(); // Consume the string literal
+                return Ok(ASTNode::Assignment(variable_name, variable_value));
+            } else {
+                return Err(format!(
+                    "Expected a string literal as the value for variable '{}'.",
+                    variable_name
+                ));
+            }
+        } else {
+            Err("Expected a variable name.".to_string())
+        }
     }
 
     fn consume_token(&mut self) {

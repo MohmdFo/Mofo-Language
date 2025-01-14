@@ -1,10 +1,12 @@
 #[derive(Debug, PartialEq)]
 pub enum Token {
     KeywordPrintf,
+    Identifier(String),  // Variable names
     StringLiteral(String),
     ParenOpen,
     ParenClose,
-    EOF, // End of file
+    Assign,              // '='
+    EOF,                 // End of file
 }
 
 pub struct Lexer {
@@ -35,8 +37,12 @@ impl Lexer {
                 self.position += 1;
                 Some(Token::ParenClose)
             }
+            '=' => {
+                self.position += 1;
+                Some(Token::Assign)
+            }
             '"' => self.read_string(),
-            'a'..='z' | 'A'..='Z' => self.read_keyword(),
+            'a'..='z' | 'A'..='Z' => self.read_identifier(),
             _ => None,
         }
     }
@@ -72,7 +78,7 @@ impl Lexer {
         Some(Token::StringLiteral(string_literal))
     }
 
-    fn read_keyword(&mut self) -> Option<Token> {
+    fn read_identifier(&mut self) -> Option<Token> {
         let start = self.position;
 
         while self.position < self.input.len()
@@ -81,11 +87,11 @@ impl Lexer {
             self.position += 1;
         }
 
-        let keyword = &self.input[start..self.position];
+        let identifier = &self.input[start..self.position];
 
-        match keyword {
+        match identifier {
             "printf" => Some(Token::KeywordPrintf),
-            _ => None, // Unknown keyword
+            _ => Some(Token::Identifier(identifier.to_string())),
         }
     }
 }

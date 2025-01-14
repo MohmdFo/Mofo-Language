@@ -40,17 +40,28 @@ fn main() {
             }
 
             let mut parser = Parser::new(tokens);
+            let mut interpreter = Interpreter::new();
 
-            match parser.parse() {
-                Ok(ast) => {
-                    let interpreter = Interpreter::new();
-                    match interpreter.execute(ast) {
-                        Ok(_) => println!("Execution completed."),
-                        Err(err) => eprintln!("Execution Error: {}", err),
+            loop {
+                match parser.parse() {
+                    Ok(ast) => {
+                        if let Err(err) = interpreter.execute(ast) {
+                            eprintln!("Execution Error: {}", err);
+                            break;
+                        }
+                    }
+                    Err(err) => {
+                        eprintln!("Parsing Error: {}", err);
+                        break;
                     }
                 }
-                Err(err) => eprintln!("Parsing Error: {}", err),
+
+                if parser.current_token().is_none() {
+                    break;
+                }
             }
+
+            println!("Execution completed.");
         }
         Err(e) => eprintln!("Error reading file: {}", e),
     }
