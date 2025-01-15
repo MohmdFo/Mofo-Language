@@ -10,10 +10,20 @@ Mofo Language is a static-typed, interpreted programming language inspired by Py
 
 ## Installation
 
-### From Installer
-1. Download the latest `setup.exe` from the [Releases](#) section.
-2. Run the installer and follow the instructions.
-3. After installation, restart your terminal or command prompt.
+### From Source (Recommended)
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-username/mofo-language.git
+   cd mofo-language
+   ```
+2. Build the project:
+   ```bash
+   cargo build --release
+   ```
+3. Install the language:
+   ```bash
+   cargo install --path .
+   ```
 4. Verify installation:
    ```bash
    mofo --version
@@ -23,20 +33,45 @@ Mofo Language is a static-typed, interpreted programming language inspired by Py
    Mofo Language v0.1.0
    ```
 
-### From Source
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-username/mofo-language.git
-   cd mofo-language
-   ```
-2. Build and install the language:
-   ```bash
-   cargo install --path .
-   ```
-3. Verify installation:
-   ```bash
-   mofo --version
-   ```
+### From Installer (Alternative)
+1. Download the latest `setup.exe` from the [Releases](#) section.
+2. Run the installer and follow the instructions.
+3. **Update PATH Manually**:
+   - **If using Git Bash or similar**:
+     1. Open the `.bashrc` or `.bash_profile` file in your home directory:
+        ```bash
+        nano ~/.bashrc
+        ```
+     2. Add the following line:
+        ```bash
+        export PATH=$PATH:/c/Program\ Files\ \(x86\)/MofoLanguage
+        ```
+     3. Save the file and reload it:
+        ```bash
+        source ~/.bashrc
+        ```
+     4. Test:
+        ```bash
+        mofo --version
+        ```
+
+   - **If using Windows Command Prompt or PowerShell**:
+     1. Open **Environment Variables**:
+        - Right-click on "This PC" or "My Computer" and select **Properties**.
+        - Click on **Advanced system settings**.
+        - In the **System Properties** window, go to the **Advanced** tab and click on **Environment Variables**.
+     2. Edit the `PATH` variable:
+        - In the **System Variables** section, find `Path` and click **Edit**.
+        - Add the Mofo Language installation directory, e.g.:
+          ```
+          C:\Program Files (x86)\MofoLanguage
+          ```
+        - Click **OK** to save the changes.
+     3. Restart your terminal or command prompt for changes to take effect.
+     4. Test:
+        ```bash
+        mofo --version
+        ```
 
 ## Usage
 
@@ -58,7 +93,6 @@ Mofo Language is a static-typed, interpreted programming language inspired by Py
 
 ### CLI Options
 - `--version`: Displays the version of the Mofo language.
-- `--help`: Provides usage instructions.
 
 ### Syntax
 - **Variable Declaration**:
@@ -93,16 +127,3 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## Contact
 For any questions or feedback, feel free to open an issue or contact the maintainer.
-
----
-
----
-
-### Key Sections Explained
-1. **Features**: Highlights what the language can do.
-2. **Installation**: Explains how to install using the installer or from source.
-3. **Usage**: Demonstrates how to use the language with examples.
-4. **Contributing**: Encourages open-source contributions.
-5. **License**: Mentions the license for the package.
-
-You can further customize this based on your project's goals. Let me know if you'd like to adjust any part!

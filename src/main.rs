@@ -10,9 +10,20 @@ use lexer::{Lexer, Token};
 use parser::{Parser, ASTNode};
 use interpreter::Interpreter;
 
+// Define the application version
+const VERSION: &str = "Mofo Language 0.1.0";
+
 fn main() {
-    // Get the file name from command line arguments
+    // Get the command-line arguments
     let args: Vec<String> = env::args().collect();
+
+    // Check for the --version flag
+    if args.len() == 2 && args[1] == "--version" {
+        println!("{}", VERSION);
+        return;
+    }
+
+    // Ensure correct usage
     if args.len() != 2 {
         eprintln!("Usage: {} <filename.mofo>", args[0]);
         std::process::exit(1);
